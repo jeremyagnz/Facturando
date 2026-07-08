@@ -37,9 +37,9 @@ function normalizeProductField(field, value) {
   return value
 }
 
-function normalizeProductBlurValue(field, value) {
-  if (field === 'quantity') {
-    return value === 0 ? 1 : value
+function normalizeQuantityBlurValue(value) {
+  if (value === 0) {
+    return 1
   }
 
   return value
@@ -83,28 +83,26 @@ function HomePage() {
 
   const handleProductBlur = (productId, field) => {
     setProducts((currentProducts) => {
-      let didChange = false
+      const productIndex = currentProducts.findIndex((product) => product.id === productId)
 
-      const nextProducts = currentProducts.map((product) => {
-        if (product.id !== productId) {
-          return product
-        }
+      if (productIndex === -1 || field !== 'quantity') {
+        return currentProducts
+      }
 
-        const normalizedValue = normalizeProductBlurValue(field, product[field])
+      const product = currentProducts[productIndex]
+      const normalizedValue = normalizeQuantityBlurValue(product.quantity)
 
-        if (normalizedValue === product[field]) {
-          return product
-        }
+      if (normalizedValue === product.quantity) {
+        return currentProducts
+      }
 
-        didChange = true
+      const nextProducts = [...currentProducts]
+      nextProducts[productIndex] = {
+        ...product,
+        quantity: normalizedValue,
+      }
 
-        return {
-          ...product,
-          [field]: normalizedValue,
-        }
-      })
-
-      return didChange ? nextProducts : currentProducts
+      return nextProducts
     })
   }
 
