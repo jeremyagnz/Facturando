@@ -49,9 +49,87 @@ function calculateNextProductId(products) {
   return products.length > 0 ? Math.max(...products.map((product) => product.id)) + 1 : 1
 }
 
+function validateNcf(value) {
+  const normalizedValue = value.trim()
+
+  if (!normalizedValue) {
+    return 'El NCF es obligatorio.'
+  }
+
+  if (normalizedValue.length !== 11) {
+    return 'El NCF debe tener exactamente 11 caracteres.'
+  }
+
+  if (!/^[a-zA-Z0-9]+$/.test(normalizedValue)) {
+    return 'El NCF debe ser alfanumérico.'
+  }
+
+  const upperCasedNcf = normalizedValue.toUpperCase()
+  if (!upperCasedNcf.startsWith('B01') && !upperCasedNcf.startsWith('B02')) {
+    return 'El NCF debe comenzar con B01 o B02.'
+  }
+
+  return ''
+}
+
+function validateForm({ clientName, clientDoc, clientNcf, products }) {
+  const errors = {
+    clientName: '',
+    clientDoc: '',
+    clientNcf: '',
+    products: {},
+  }
+
+  if (!clientName.trim()) {
+    errors.clientName = 'El nombre es obligatorio.'
+  }
+
+  if (!clientDoc.trim()) {
+    errors.clientDoc = 'El RNC/Cédula es obligatorio.'
+  }
+
+  errors.clientNcf = validateNcf(clientNcf)
+
+  products.forEach((product) => {
+    const productErrors = {}
+
+    if (Number(product.quantity) <= 0) {
+      productErrors.quantity = 'La cantidad debe ser mayor que 0.'
+    }
+
+    if (Number(product.price) <= 0) {
+      productErrors.price = 'El precio debe ser mayor que 0.'
+    }
+
+    if (Object.keys(productErrors).length > 0) {
+      errors.products[product.id] = productErrors
+    }
+  })
+
+  return errors
+}
+
+function hasFormErrors(errors) {
+  return (
+    Boolean(errors.clientName) ||
+    Boolean(errors.clientDoc) ||
+    Boolean(errors.clientNcf) ||
+    Object.keys(errors.products).length > 0
+  )
+}
+
 function HomePage() {
+  const [clientName, setClientName] = useState('')
+  const [clientDoc, setClientDoc] = useState('')
+  const [clientNcf, setClientNcf] = useState('')
   const [products, setProducts] = useState(initialProducts)
   const [nextProductId, setNextProductId] = useState(calculateNextProductId(initialProducts))
+  const [errors, setErrors] = useState({
+    clientName: '',
+    clientDoc: '',
+    clientNcf: '',
+    products: {},
+  })
 
   const { subtotal, itbis, total } = useMemo(() => {
     const nextSubtotal = calculateSubtotal(products)
@@ -115,6 +193,22 @@ function HomePage() {
     setProducts((currentProducts) => currentProducts.filter((product) => product.id !== productId))
   }
 
+  const handleSubmit = (event) => {
+    event.preventDefault()
+
+    const nextErrors = validateForm({
+      clientName,
+      clientDoc,
+      clientNcf,
+      products,
+    })
+    setErrors(nextErrors)
+
+    if (hasFormErrors(nextErrors)) {
+      return
+    }
+  }
+
   return (
     <section className="flex flex-1 justify-center py-6 sm:py-10">
       <div className="w-full max-w-6xl">
@@ -122,7 +216,10 @@ function HomePage() {
           <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">Generador de Facturas</h1>
         </header>
 
-        <div className="rounded-3xl border border-slate-800 bg-slate-900/70 p-5 shadow-2xl shadow-slate-950/40 backdrop-blur sm:p-8">
+        <form
+          onSubmit={handleSubmit}
+          className="rounded-3xl border border-slate-800 bg-slate-900/70 p-5 shadow-2xl shadow-slate-950/40 backdrop-blur sm:p-8"
+        >
           <section>
             <h2 className="text-lg font-medium text-white sm:text-xl">Datos del Cliente</h2>
             <div className="mt-4 grid gap-4 md:grid-cols-3">
@@ -133,9 +230,12 @@ function HomePage() {
                 <input
                   id="client-name"
                   type="text"
+                  value={clientName}
+                  onChange={(event) => setClientName(event.target.value)}
                   placeholder="Ej. Juan Pérez"
                   className="w-full rounded-xl border border-slate-700 bg-slate-950/70 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
                 />
+                {errors.clientName ? <p className="mt-2 text-xs text-red-400">{errors.clientName}</p> : null}
               </div>
 
               <div>
@@ -145,9 +245,12 @@ function HomePage() {
                 <input
                   id="client-doc"
                   type="text"
+                  value={clientDoc}
+                  onChange={(event) => setClientDoc(event.target.value)}
                   placeholder="Ej. 001-1234567-8"
                   className="w-full rounded-xl border border-slate-700 bg-slate-950/70 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
                 />
+                {errors.clientDoc ? <p className="mt-2 text-xs text-red-400">{errors.clientDoc}</p> : null}
               </div>
 
               <div>
@@ -157,9 +260,19 @@ function HomePage() {
                 <input
                   id="client-ncf"
                   type="text"
+                  value={clientNcf}
+                  onChange={(event) => {
+                    const nextNcf = event.target.value
+                    setClientNcf(nextNcf)
+                    setErrors((currentErrors) => ({
+                      ...currentErrors,
+                      clientNcf: validateNcf(nextNcf),
+                    }))
+                  }}
                   placeholder="Ej. B0100000001"
                   className="w-full rounded-xl border border-slate-700 bg-slate-950/70 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
                 />
+                {errors.clientNcf ? <p className="mt-2 text-xs text-red-400">{errors.clientNcf}</p> : null}
               </div>
             </div>
           </section>
@@ -207,16 +320,22 @@ function HomePage() {
                               onBlur={() => handleProductBlur(product.id, 'quantity')}
                               className="w-24 rounded-xl border border-slate-700 bg-slate-950/70 px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
                             />
+                            {errors.products[product.id]?.quantity ? (
+                              <p className="mt-2 text-xs text-red-400">{errors.products[product.id].quantity}</p>
+                            ) : null}
                           </td>
                           <td className="px-4 py-4">
                             <input
                               type="number"
-                              min="0"
+                              min="0.01"
                               step="0.01"
                               value={product.price}
                               onChange={(event) => handleProductChange(product.id, 'price', event.target.value)}
                               className="w-32 rounded-xl border border-slate-700 bg-slate-950/70 px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
                             />
+                            {errors.products[product.id]?.price ? (
+                              <p className="mt-2 text-xs text-red-400">{errors.products[product.id].price}</p>
+                            ) : null}
                           </td>
                           <td className="px-4 py-4">
                             {currencyFormatter.format(calculateProductSubtotal(product))}
@@ -266,7 +385,16 @@ function HomePage() {
               </dl>
             </div>
           </section>
-        </div>
+
+          <div className="mt-6 flex justify-end">
+            <button
+              type="submit"
+              className="inline-flex items-center rounded-xl border border-cyan-400/30 bg-cyan-400/10 px-4 py-2 text-sm font-medium text-cyan-300 transition hover:bg-cyan-400/20 focus:outline-none focus:ring-2 focus:ring-cyan-400/50"
+            >
+              Enviar Factura
+            </button>
+          </div>
+        </form>
       </div>
     </section>
   )
