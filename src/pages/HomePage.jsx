@@ -94,7 +94,7 @@ function validateForm({ clientName, clientDoc, clientNcf, products }) {
     const productErrors = {}
 
     if (Number(product.quantity) <= 0) {
-      productErrors.quantity = 'La cantidad debe ser mayor que 0.'
+      productErrors.quantity = 'La cantidad debe ser un entero mayor que 0.'
     }
 
     if (Number(product.price) <= 0) {
@@ -327,7 +327,7 @@ function HomePage() {
                           <td className="px-4 py-4">
                             <input
                               type="number"
-                              min="0.01"
+                              min="0"
                               step="0.01"
                               value={product.price}
                               onChange={(event) => handleProductChange(product.id, 'price', event.target.value)}
