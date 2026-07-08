@@ -1,0 +1,23 @@
+# Dependencias
+node_modules/
+vendor/
+
+# Archivos de entorno
+.env
+.env.local
+.env.*.local
+
+# Compilados / artefactos
+dist/
+build/
+*.class
+*.pyc
+__pycache__/
+
+# Logs
+*.log
+logs/
+
+# Sistemas operativos
+.DS_Store
+Thumbs.db
