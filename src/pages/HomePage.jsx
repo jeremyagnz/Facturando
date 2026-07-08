@@ -1,9 +1,11 @@
 import { useState } from 'react'
 
 const initialProducts = [
-  { id: 1, description: 'Servicio de consultoría', quantity: '1', price: '2500' },
-  { id: 2, description: 'Diseño de propuesta', quantity: '2', price: '1200' },
+  { id: 1, description: 'Servicio de consultoría', quantity: 1, price: 2500 },
+  { id: 2, description: 'Diseño de propuesta', quantity: 2, price: 1200 },
 ]
+
+const TABLE_COLUMN_COUNT = 5
 
 const currencyFormatter = new Intl.NumberFormat('es-DO', {
   style: 'currency',
@@ -15,20 +17,23 @@ function createEmptyProduct(id) {
   return {
     id,
     description: '',
-    quantity: '1',
-    price: '0',
+    quantity: 1,
+    price: 0,
   }
 }
 
 function HomePage() {
   const [products, setProducts] = useState(initialProducts)
-  const [nextProductId, setNextProductId] = useState(initialProducts.length + 1)
+  const [nextProductId, setNextProductId] = useState(Math.max(...initialProducts.map((product) => product.id)) + 1)
 
   const subtotal = products.reduce((accumulator, product) => {
     return accumulator + Number(product.quantity || 0) * Number(product.price || 0)
   }, 0)
 
   const handleProductChange = (productId, field, value) => {
+    const normalizedValue =
+      field === 'quantity' || field === 'price' ? (value === '' ? 0 : Number(value)) : value
+
     setProducts((currentProducts) =>
       currentProducts.map((product) => {
         if (product.id !== productId) {
@@ -37,7 +42,7 @@ function HomePage() {
 
         return {
           ...product,
-          [field]: value,
+          [field]: normalizedValue,
         }
       }),
     )
@@ -118,7 +123,7 @@ function HomePage() {
                   <tbody className="divide-y divide-slate-800 bg-slate-900/40 text-sm text-slate-300">
                     {products.length === 0 ? (
                       <tr>
-                        <td colSpan="5" className="px-4 py-6 text-center text-slate-400">
+                        <td colSpan={TABLE_COLUMN_COUNT} className="px-4 py-6 text-center text-slate-400">
                           No hay productos. Agrega una nueva fila para comenzar.
                         </td>
                       </tr>
