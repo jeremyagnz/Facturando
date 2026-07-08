@@ -50,6 +50,10 @@ function calculateNextProductId(products) {
   return products.length > 0 ? Math.max(...products.map((product) => product.id)) + 1 : 1
 }
 
+function sanitizeNcfInput(value) {
+  return value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase()
+}
+
 function validateNcf(value) {
   const normalizedValue = value.trim()
 
@@ -350,7 +354,7 @@ function HomePage() {
                       value={clientNcf}
                       maxLength={11}
                       onChange={(event) => {
-                        const sanitized = event.target.value.replace(/[^a-zA-Z0-9]/g, '').toUpperCase()
+                        const sanitized = sanitizeNcfInput(event.target.value)
                         handleClientFieldChange(sanitized, setClientNcf, 'clientNcf', validateNcf)
                       }}
                       placeholder="Ej. B0100000001"
