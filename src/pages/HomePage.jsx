@@ -37,6 +37,14 @@ function normalizeProductField(field, value) {
   return value
 }
 
+function normalizeProductBlurValue(field, value) {
+  if (field === 'quantity') {
+    return value === 0 ? 1 : value
+  }
+
+  return value
+}
+
 function calculateNextProductId(products) {
   return products.length > 0 ? Math.max(...products.map((product) => product.id)) + 1 : 1
 }
@@ -61,6 +69,21 @@ function HomePage() {
         return {
           ...product,
           [field]: normalizedValue,
+        }
+      }),
+    )
+  }
+
+  const handleProductBlur = (productId, field) => {
+    setProducts((currentProducts) =>
+      currentProducts.map((product) => {
+        if (product.id !== productId) {
+          return product
+        }
+
+        return {
+          ...product,
+          [field]: normalizeProductBlurValue(field, product[field]),
         }
       }),
     )
@@ -160,10 +183,11 @@ function HomePage() {
                           <td className="px-4 py-4">
                             <input
                               type="number"
-                              min="0"
+                              min="1"
                               step="1"
                               value={product.quantity}
                               onChange={(event) => handleProductChange(product.id, 'quantity', event.target.value)}
+                              onBlur={() => handleProductBlur(product.id, 'quantity')}
                               className="w-24 rounded-xl border border-slate-700 bg-slate-950/70 px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
                             />
                           </td>
