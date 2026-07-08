@@ -94,7 +94,7 @@ function validateForm({ clientName, clientDoc, clientNcf, products }) {
     const productErrors = {}
 
     const normalizedQuantity = Number(product.quantity)
-    if (!Number.isFinite(normalizedQuantity) || normalizedQuantity <= 0 || !Number.isInteger(normalizedQuantity)) {
+    if (!isValidPositiveInteger(normalizedQuantity)) {
       productErrors.quantity = 'La cantidad debe ser un entero mayor que 0.'
     }
 
@@ -109,6 +109,10 @@ function validateForm({ clientName, clientDoc, clientNcf, products }) {
   })
 
   return errors
+}
+
+function isValidPositiveInteger(value) {
+  return Number.isFinite(value) && value > 0 && Number.isInteger(value)
 }
 
 function hasFormErrors(errors) {
@@ -126,6 +130,7 @@ function HomePage() {
   const [clientNcf, setClientNcf] = useState('')
   const [products, setProducts] = useState(initialProducts)
   const [nextProductId, setNextProductId] = useState(calculateNextProductId(initialProducts))
+  const [submitMessage, setSubmitMessage] = useState('')
   const [errors, setErrors] = useState({
     clientName: '',
     clientDoc: '',
@@ -195,16 +200,17 @@ function HomePage() {
     setProducts((currentProducts) => currentProducts.filter((product) => product.id !== productId))
   }
 
-  const handleRequiredFieldChange = (value, setter, field, message) => {
+  const handleClientFieldChange = (value, setter, field, validator) => {
     setter(value)
     setErrors((currentErrors) => ({
       ...currentErrors,
-      [field]: value.trim() ? '' : message,
+      [field]: validator(value),
     }))
   }
 
   const handleSubmit = (event) => {
     event.preventDefault()
+    setSubmitMessage('')
 
     const nextErrors = validateForm({
       clientName,
@@ -217,6 +223,8 @@ function HomePage() {
     if (hasFormErrors(nextErrors)) {
       return
     }
+
+    setSubmitMessage('Formulario válido. Listo para enviar.')
   }
 
   return (
@@ -242,11 +250,11 @@ function HomePage() {
                   type="text"
                   value={clientName}
                   onChange={(event) =>
-                    handleRequiredFieldChange(
+                    handleClientFieldChange(
                       event.target.value,
                       setClientName,
                       'clientName',
-                      'El nombre es obligatorio.',
+                      (value) => (value.trim() ? '' : 'El nombre es obligatorio.'),
                     )
                   }
                   placeholder="Ej. Juan Pérez"
@@ -264,11 +272,11 @@ function HomePage() {
                   type="text"
                   value={clientDoc}
                   onChange={(event) =>
-                    handleRequiredFieldChange(
+                    handleClientFieldChange(
                       event.target.value,
                       setClientDoc,
                       'clientDoc',
-                      'El RNC/Cédula es obligatorio.',
+                      (value) => (value.trim() ? '' : 'El RNC/Cédula es obligatorio.'),
                     )
                   }
                   placeholder="Ej. 001-1234567-8"
@@ -285,14 +293,9 @@ function HomePage() {
                   id="client-ncf"
                   type="text"
                   value={clientNcf}
-                  onChange={(event) => {
-                    const nextNcf = event.target.value
-                    setClientNcf(nextNcf)
-                    setErrors((currentErrors) => ({
-                      ...currentErrors,
-                      clientNcf: validateNcf(nextNcf),
-                    }))
-                  }}
+                  onChange={(event) =>
+                    handleClientFieldChange(event.target.value, setClientNcf, 'clientNcf', validateNcf)
+                  }
                   placeholder="Ej. B0100000001"
                   className="w-full rounded-xl border border-slate-700 bg-slate-950/70 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
                 />
@@ -347,9 +350,9 @@ function HomePage() {
                               onBlur={() => handleProductBlur(product.id, 'quantity')}
                               className="w-24 rounded-xl border border-slate-700 bg-slate-950/70 px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
                             />
-                            {productErrors?.quantity ? (
+                            {productErrors?.quantity && (
                               <p className="mt-2 text-xs text-red-400">{productErrors.quantity}</p>
-                            ) : null}
+                            )}
                           </td>
                           <td className="px-4 py-4">
                             <input
@@ -360,9 +363,9 @@ function HomePage() {
                               onChange={(event) => handleProductChange(product.id, 'price', event.target.value)}
                               className="w-32 rounded-xl border border-slate-700 bg-slate-950/70 px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
                             />
-                            {productErrors?.price ? (
+                            {productErrors?.price && (
                               <p className="mt-2 text-xs text-red-400">{productErrors.price}</p>
-                            ) : null}
+                            )}
                           </td>
                           <td className="px-4 py-4">
                             {currencyFormatter.format(calculateProductSubtotal(product))}
@@ -422,6 +425,7 @@ function HomePage() {
               Enviar Factura
             </button>
           </div>
+          {submitMessage ? <p className="mt-3 text-right text-sm text-emerald-400">{submitMessage}</p> : null}
         </form>
       </div>
     </section>
