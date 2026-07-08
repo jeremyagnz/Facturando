@@ -1,26 +1,110 @@
 function HomePage() {
   return (
-    <section className="flex flex-1 items-center justify-center">
-      <div className="w-full max-w-3xl rounded-3xl border border-slate-800 bg-slate-900/70 p-10 shadow-2xl shadow-slate-950/40 backdrop-blur">
-        <span className="inline-flex rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 text-sm font-medium text-emerald-300">
-          React + Vite + Tailwind CSS
-        </span>
-        <h1 className="mt-6 text-4xl font-semibold tracking-tight text-white sm:text-5xl">
-          Facturando está listo para comenzar.
-        </h1>
-        <p className="mt-4 max-w-2xl text-base leading-7 text-slate-300 sm:text-lg">
-          Esta base inicial incluye una estructura organizada para componentes, páginas, hooks, utilidades y estilos,
-          preparada para empezar el desarrollo sin lógica de negocio.
-        </p>
-        <div className="mt-8 grid gap-4 sm:grid-cols-2">
-          <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-5">
-            <h2 className="text-lg font-medium text-white">Estructura inicial</h2>
-            <p className="mt-2 text-sm text-slate-400">src/components, src/pages, src/hooks, src/utils y src/styles.</p>
-          </div>
-          <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-5">
-            <h2 className="text-lg font-medium text-white">Tooling</h2>
-            <p className="mt-2 text-sm text-slate-400">Vite para desarrollo, ESLint para calidad y Tailwind CSS para estilos.</p>
-          </div>
+    <section className="flex flex-1 justify-center py-6 sm:py-10">
+      <div className="w-full max-w-6xl">
+        <header className="mb-6 sm:mb-8">
+          <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">Generador de Facturas</h1>
+        </header>
+
+        <div className="rounded-3xl border border-slate-800 bg-slate-900/70 p-5 shadow-2xl shadow-slate-950/40 backdrop-blur sm:p-8">
+          <section>
+            <h2 className="text-lg font-medium text-white sm:text-xl">Datos del Cliente</h2>
+            <div className="mt-4 grid gap-4 md:grid-cols-3">
+              <div>
+                <label htmlFor="client-name" className="mb-2 block text-sm font-medium text-slate-200">
+                  Nombre del Cliente
+                </label>
+                <input
+                  id="client-name"
+                  type="text"
+                  placeholder="Ej. Juan Pérez"
+                  className="w-full rounded-xl border border-slate-700 bg-slate-950/70 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="client-doc" className="mb-2 block text-sm font-medium text-slate-200">
+                  RNC/Cédula
+                </label>
+                <input
+                  id="client-doc"
+                  type="text"
+                  placeholder="Ej. 001-1234567-8"
+                  className="w-full rounded-xl border border-slate-700 bg-slate-950/70 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="client-ncf" className="mb-2 block text-sm font-medium text-slate-200">
+                  NCF
+                </label>
+                <input
+                  id="client-ncf"
+                  type="text"
+                  placeholder="Ej. B0100000001"
+                  className="w-full rounded-xl border border-slate-700 bg-slate-950/70 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none"
+                />
+              </div>
+            </div>
+          </section>
+
+          <section className="mt-8">
+            <div className="overflow-hidden rounded-2xl border border-slate-800">
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-slate-800 text-left">
+                  <thead className="bg-slate-950/60">
+                    <tr>
+                      <th className="px-4 py-3 text-sm font-semibold text-slate-200">Descripción</th>
+                      <th className="px-4 py-3 text-sm font-semibold text-slate-200">Cantidad</th>
+                      <th className="px-4 py-3 text-sm font-semibold text-slate-200">Precio Unitario</th>
+                      <th className="px-4 py-3 text-sm font-semibold text-slate-200">Subtotal</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800 bg-slate-900/40 text-sm text-slate-300">
+                    <tr>
+                      <td className="px-4 py-4">Servicio de consultoría</td>
+                      <td className="px-4 py-4">1</td>
+                      <td className="px-4 py-4">RD$ 2,500.00</td>
+                      <td className="px-4 py-4">RD$ 2,500.00</td>
+                    </tr>
+                    <tr>
+                      <td className="px-4 py-4">Diseño de propuesta</td>
+                      <td className="px-4 py-4">2</td>
+                      <td className="px-4 py-4">RD$ 1,200.00</td>
+                      <td className="px-4 py-4">RD$ 2,400.00</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              className="mt-4 inline-flex items-center rounded-xl border border-emerald-400/30 bg-emerald-400/10 px-4 py-2 text-sm font-medium text-emerald-300 transition hover:bg-emerald-400/20"
+            >
+              Agregar Producto
+            </button>
+          </section>
+
+          <section className="mt-8 flex justify-end">
+            <div className="w-full max-w-xs rounded-2xl border border-slate-800 bg-slate-950/60 p-4 sm:p-5">
+              <h3 className="text-base font-medium text-white">Resumen</h3>
+              <dl className="mt-4 space-y-3 text-sm">
+                <div className="flex items-center justify-between text-slate-300">
+                  <dt>Subtotal</dt>
+                  <dd>RD$ 4,900.00</dd>
+                </div>
+                <div className="flex items-center justify-between text-slate-300">
+                  <dt>ITBIS</dt>
+                  <dd>RD$ 882.00</dd>
+                </div>
+                <div className="flex items-center justify-between border-t border-slate-800 pt-3 text-base font-semibold text-white">
+                  <dt>Total</dt>
+                  <dd>RD$ 5,782.00</dd>
+                </div>
+              </dl>
+            </div>
+          </section>
         </div>
       </div>
     </section>
