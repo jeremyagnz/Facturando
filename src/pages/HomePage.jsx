@@ -24,19 +24,25 @@ function createEmptyProduct(id) {
 
 function normalizeProductField(field, value) {
   if (field === 'quantity' || field === 'price') {
-    return value === '' ? 0 : Number(value)
+    if (value === '') {
+      return 0
+    }
+
+    const numericValue = Number(value)
+
+    return Number.isNaN(numericValue) ? 0 : numericValue
   }
 
   return value
 }
 
-function getInitialNextProductId(products) {
+function calculateNextProductId(products) {
   return products.length > 0 ? Math.max(...products.map((product) => product.id)) + 1 : 1
 }
 
 function HomePage() {
   const [products, setProducts] = useState(initialProducts)
-  const [nextProductId, setNextProductId] = useState(getInitialNextProductId(initialProducts))
+  const [nextProductId, setNextProductId] = useState(calculateNextProductId(initialProducts))
 
   const subtotal = products.reduce((accumulator, product) => {
     return accumulator + product.quantity * product.price
@@ -153,7 +159,7 @@ function HomePage() {
                           <td className="px-4 py-4">
                             <input
                               type="number"
-                              min="0"
+                              min="1"
                               step="1"
                               value={product.quantity}
                               onChange={(event) => handleProductChange(product.id, 'quantity', event.target.value)}
