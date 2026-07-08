@@ -1,3 +1,14 @@
+const sampleProducts = [
+  { description: 'Servicio de consultoría', quantity: '1', unitPrice: 'RD$ 2,500.00', subtotal: 'RD$ 2,500.00' },
+  { description: 'Diseño de propuesta', quantity: '2', unitPrice: 'RD$ 1,200.00', subtotal: 'RD$ 2,400.00' },
+]
+
+const sampleSummary = {
+  subtotal: 'RD$ 4,900.00',
+  itbis: 'RD$ 882.00',
+  total: 'RD$ 5,782.00',
+}
+
 function HomePage() {
   return (
     <section className="flex flex-1 justify-center py-6 sm:py-10">
@@ -51,7 +62,7 @@ function HomePage() {
           <section className="mt-8">
             <div className="overflow-hidden rounded-2xl border border-slate-800">
               <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-slate-800 text-left">
+                <table aria-label="Lista de productos de la factura" className="min-w-full divide-y divide-slate-800 text-left">
                   <caption className="sr-only">Lista de productos de la factura</caption>
                   <thead className="bg-slate-950/60">
                     <tr>
@@ -62,18 +73,14 @@ function HomePage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-800 bg-slate-900/40 text-sm text-slate-300">
-                    <tr>
-                      <td className="px-4 py-4">Servicio de consultoría</td>
-                      <td className="px-4 py-4">1</td>
-                      <td className="px-4 py-4">RD$ 2,500.00</td>
-                      <td className="px-4 py-4">RD$ 2,500.00</td>
-                    </tr>
-                    <tr>
-                      <td className="px-4 py-4">Diseño de propuesta</td>
-                      <td className="px-4 py-4">2</td>
-                      <td className="px-4 py-4">RD$ 1,200.00</td>
-                      <td className="px-4 py-4">RD$ 2,400.00</td>
-                    </tr>
+                    {sampleProducts.map((product) => (
+                      <tr key={`${product.description}-${product.quantity}`}>
+                        <td className="px-4 py-4">{product.description}</td>
+                        <td className="px-4 py-4">{product.quantity}</td>
+                        <td className="px-4 py-4">{product.unitPrice}</td>
+                        <td className="px-4 py-4">{product.subtotal}</td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -93,15 +100,15 @@ function HomePage() {
               <dl className="mt-4 space-y-3 text-sm">
                 <div className="flex items-center justify-between text-slate-300">
                   <dt>Subtotal</dt>
-                  <dd>RD$ 4,900.00</dd>
+                  <dd>{sampleSummary.subtotal}</dd>
                 </div>
                 <div className="flex items-center justify-between text-slate-300">
                   <dt>ITBIS</dt>
-                  <dd>RD$ 882.00</dd>
+                  <dd>{sampleSummary.itbis}</dd>
                 </div>
                 <div className="flex items-center justify-between border-t border-slate-800 pt-3 text-base font-semibold text-white">
                   <dt>Total</dt>
-                  <dd>RD$ 5,782.00</dd>
+                  <dd>{sampleSummary.total}</dd>
                 </div>
               </dl>
             </div>
