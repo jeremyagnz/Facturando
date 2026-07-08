@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
   calculateItbis,
   calculateProductSubtotal,
@@ -53,9 +53,16 @@ function HomePage() {
   const [products, setProducts] = useState(initialProducts)
   const [nextProductId, setNextProductId] = useState(calculateNextProductId(initialProducts))
 
-  const subtotal = calculateSubtotal(products)
-  const itbis = calculateItbis(subtotal)
-  const total = calculateTotal(subtotal, itbis)
+  const { subtotal, itbis, total } = useMemo(() => {
+    const nextSubtotal = calculateSubtotal(products)
+    const nextItbis = calculateItbis(nextSubtotal)
+
+    return {
+      subtotal: nextSubtotal,
+      itbis: nextItbis,
+      total: calculateTotal(nextSubtotal, nextItbis),
+    }
+  }, [products])
 
   const handleProductChange = (productId, field, value) => {
     const normalizedValue = normalizeProductField(field, value)
