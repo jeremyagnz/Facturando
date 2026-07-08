@@ -94,11 +94,12 @@ function validateForm({ clientName, clientDoc, clientNcf, products }) {
     const productErrors = {}
 
     const normalizedQuantity = Number(product.quantity)
-    if (normalizedQuantity <= 0 || !Number.isInteger(normalizedQuantity)) {
+    if (!Number.isFinite(normalizedQuantity) || normalizedQuantity <= 0 || !Number.isInteger(normalizedQuantity)) {
       productErrors.quantity = 'La cantidad debe ser un entero mayor que 0.'
     }
 
-    if (Number(product.price) <= 0) {
+    const normalizedPrice = Number(product.price)
+    if (!Number.isFinite(normalizedPrice) || normalizedPrice <= 0) {
       productErrors.price = 'El precio debe ser mayor que 0.'
     }
 
@@ -194,19 +195,11 @@ function HomePage() {
     setProducts((currentProducts) => currentProducts.filter((product) => product.id !== productId))
   }
 
-  const handleClientNameChange = (value) => {
-    setClientName(value)
+  const handleRequiredFieldChange = (value, setter, field, message) => {
+    setter(value)
     setErrors((currentErrors) => ({
       ...currentErrors,
-      clientName: value.trim() ? '' : 'El nombre es obligatorio.',
-    }))
-  }
-
-  const handleClientDocChange = (value) => {
-    setClientDoc(value)
-    setErrors((currentErrors) => ({
-      ...currentErrors,
-      clientDoc: value.trim() ? '' : 'El RNC/Cédula es obligatorio.',
+      [field]: value.trim() ? '' : message,
     }))
   }
 
@@ -248,7 +241,14 @@ function HomePage() {
                   id="client-name"
                   type="text"
                   value={clientName}
-                  onChange={(event) => handleClientNameChange(event.target.value)}
+                  onChange={(event) =>
+                    handleRequiredFieldChange(
+                      event.target.value,
+                      setClientName,
+                      'clientName',
+                      'El nombre es obligatorio.',
+                    )
+                  }
                   placeholder="Ej. Juan Pérez"
                   className="w-full rounded-xl border border-slate-700 bg-slate-950/70 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
                 />
@@ -263,7 +263,14 @@ function HomePage() {
                   id="client-doc"
                   type="text"
                   value={clientDoc}
-                  onChange={(event) => handleClientDocChange(event.target.value)}
+                  onChange={(event) =>
+                    handleRequiredFieldChange(
+                      event.target.value,
+                      setClientDoc,
+                      'clientDoc',
+                      'El RNC/Cédula es obligatorio.',
+                    )
+                  }
                   placeholder="Ej. 001-1234567-8"
                   className="w-full rounded-xl border border-slate-700 bg-slate-950/70 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
                 />
@@ -316,7 +323,10 @@ function HomePage() {
                         </td>
                       </tr>
                     ) : (
-                      products.map((product) => (
+                      products.map((product) => {
+                        const productErrors = errors.products[product.id]
+
+                        return (
                         <tr key={product.id}>
                           <td className="px-4 py-4">
                             <input
@@ -337,8 +347,8 @@ function HomePage() {
                               onBlur={() => handleProductBlur(product.id, 'quantity')}
                               className="w-24 rounded-xl border border-slate-700 bg-slate-950/70 px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
                             />
-                            {errors.products[product.id]?.quantity ? (
-                              <p className="mt-2 text-xs text-red-400">{errors.products[product.id].quantity}</p>
+                            {productErrors?.quantity ? (
+                              <p className="mt-2 text-xs text-red-400">{productErrors.quantity}</p>
                             ) : null}
                           </td>
                           <td className="px-4 py-4">
@@ -350,8 +360,8 @@ function HomePage() {
                               onChange={(event) => handleProductChange(product.id, 'price', event.target.value)}
                               className="w-32 rounded-xl border border-slate-700 bg-slate-950/70 px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
                             />
-                            {errors.products[product.id]?.price ? (
-                              <p className="mt-2 text-xs text-red-400">{errors.products[product.id].price}</p>
+                            {productErrors?.price ? (
+                              <p className="mt-2 text-xs text-red-400">{productErrors.price}</p>
                             ) : null}
                           </td>
                           <td className="px-4 py-4">
@@ -367,7 +377,8 @@ function HomePage() {
                             </button>
                           </td>
                         </tr>
-                      ))
+                        )
+                      })
                     )}
                   </tbody>
                 </table>
