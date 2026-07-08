@@ -126,7 +126,7 @@ function HomePage() {
                     <tr>
                       <th className="px-4 py-3 text-sm font-semibold text-slate-200">Descripción</th>
                       <th className="px-4 py-3 text-sm font-semibold text-slate-200">Cantidad</th>
-                      <th className="px-4 py-3 text-sm font-semibold text-slate-200">Precio Unitario</th>
+                      <th className="px-4 py-3 text-sm font-semibold text-slate-200">Precio</th>
                       <th className="px-4 py-3 text-sm font-semibold text-slate-200">Subtotal</th>
                       <th className="px-4 py-3 text-sm font-semibold text-slate-200">Acciones</th>
                     </tr>
@@ -204,16 +204,16 @@ function HomePage() {
               <h3 className="text-base font-medium text-white">Resumen</h3>
               <dl className="mt-4 space-y-3 text-sm">
                 <div className="flex items-center justify-between text-slate-300">
-                  <dt>Productos</dt>
-                  <dd>{products.length}</dd>
-                </div>
-                <div className="flex items-center justify-between text-slate-300">
                   <dt>Subtotal</dt>
                   <dd>{currencyFormatter.format(subtotal)}</dd>
                 </div>
+                <div className="flex items-center justify-between text-slate-300">
+                  <dt>ITBIS</dt>
+                  <dd>Pendiente</dd>
+                </div>
                 <div className="flex items-center justify-between border-t border-slate-800 pt-3 text-base font-semibold text-white">
-                  <dt>Cálculos fiscales</dt>
-                  <dd>Pendientes</dd>
+                  <dt>Total</dt>
+                  <dd>Pendiente</dd>
                 </div>
               </dl>
             </div>
