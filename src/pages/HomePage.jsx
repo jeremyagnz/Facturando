@@ -22,17 +22,26 @@ function createEmptyProduct(id) {
   }
 }
 
+function normalizeProductField(field, value) {
+  if (field === 'quantity' || field === 'price') {
+    return value === '' ? 0 : Number(value)
+  }
+
+  return value
+}
+
 function HomePage() {
   const [products, setProducts] = useState(initialProducts)
-  const [nextProductId, setNextProductId] = useState(Math.max(...initialProducts.map((product) => product.id)) + 1)
+  const [nextProductId, setNextProductId] = useState(
+    Math.max(0, ...initialProducts.map((product) => product.id)) + 1,
+  )
 
   const subtotal = products.reduce((accumulator, product) => {
     return accumulator + Number(product.quantity || 0) * Number(product.price || 0)
   }, 0)
 
   const handleProductChange = (productId, field, value) => {
-    const normalizedValue =
-      field === 'quantity' || field === 'price' ? (value === '' ? 0 : Number(value)) : value
+    const normalizedValue = normalizeProductField(field, value)
 
     setProducts((currentProducts) =>
       currentProducts.map((product) => {
