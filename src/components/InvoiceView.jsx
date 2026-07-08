@@ -1,16 +1,6 @@
-import { calculateProductSubtotal, ITBIS_RATE } from '../utils/invoiceCalculations'
-
-const currencyFormatter = new Intl.NumberFormat('es-DO', {
-  style: 'currency',
-  currency: 'DOP',
-  minimumFractionDigits: 2,
-})
-
-const dateFormatter = new Intl.DateTimeFormat('es-DO', {
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric',
-})
+import { calculateProductSubtotal } from '../utils/invoiceCalculations'
+import { currencyFormatter, dateFormatter } from '../utils/formatters'
+import InvoiceSummary from './InvoiceSummary'
 
 function InvoiceView({ invoice, onNewInvoice }) {
   const { clientName, clientDoc, clientNcf, products, subtotal, itbis, total, date } = invoice
@@ -97,20 +87,7 @@ function InvoiceView({ invoice, onNewInvoice }) {
         {/* Summary */}
         <div className="mt-6 flex justify-end">
           <div className="w-full max-w-xs rounded-2xl border border-slate-800 bg-slate-950/60 p-4 print:rounded-none print:border-slate-200 print:bg-transparent sm:p-5">
-            <dl className="space-y-3 text-sm">
-              <div className="flex items-center justify-between text-slate-300 print:text-slate-600">
-                <dt>Subtotal</dt>
-                <dd>{currencyFormatter.format(subtotal)}</dd>
-              </div>
-              <div className="flex items-center justify-between text-slate-300 print:text-slate-600">
-                <dt>ITBIS ({(ITBIS_RATE * 100).toFixed(0)}%)</dt>
-                <dd>{currencyFormatter.format(itbis)}</dd>
-              </div>
-              <div className="flex items-center justify-between border-t border-slate-800 pt-3 text-base font-semibold text-white print:border-slate-300 print:text-slate-900">
-                <dt>Total</dt>
-                <dd>{currencyFormatter.format(total)}</dd>
-              </div>
-            </dl>
+            <InvoiceSummary subtotal={subtotal} itbis={itbis} total={total} showItbisRate />
           </div>
         </div>
       </div>
@@ -119,3 +96,4 @@ function InvoiceView({ invoice, onNewInvoice }) {
 }
 
 export default InvoiceView
+
