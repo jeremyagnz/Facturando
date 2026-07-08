@@ -93,7 +93,8 @@ function validateForm({ clientName, clientDoc, clientNcf, products }) {
   products.forEach((product) => {
     const productErrors = {}
 
-    if (Number(product.quantity) <= 0) {
+    const normalizedQuantity = Number(product.quantity)
+    if (normalizedQuantity <= 0 || !Number.isInteger(normalizedQuantity)) {
       productErrors.quantity = 'La cantidad debe ser un entero mayor que 0.'
     }
 
@@ -193,6 +194,22 @@ function HomePage() {
     setProducts((currentProducts) => currentProducts.filter((product) => product.id !== productId))
   }
 
+  const handleClientNameChange = (value) => {
+    setClientName(value)
+    setErrors((currentErrors) => ({
+      ...currentErrors,
+      clientName: value.trim() ? '' : 'El nombre es obligatorio.',
+    }))
+  }
+
+  const handleClientDocChange = (value) => {
+    setClientDoc(value)
+    setErrors((currentErrors) => ({
+      ...currentErrors,
+      clientDoc: value.trim() ? '' : 'El RNC/Cédula es obligatorio.',
+    }))
+  }
+
   const handleSubmit = (event) => {
     event.preventDefault()
 
@@ -231,7 +248,7 @@ function HomePage() {
                   id="client-name"
                   type="text"
                   value={clientName}
-                  onChange={(event) => setClientName(event.target.value)}
+                  onChange={(event) => handleClientNameChange(event.target.value)}
                   placeholder="Ej. Juan Pérez"
                   className="w-full rounded-xl border border-slate-700 bg-slate-950/70 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
                 />
@@ -246,7 +263,7 @@ function HomePage() {
                   id="client-doc"
                   type="text"
                   value={clientDoc}
-                  onChange={(event) => setClientDoc(event.target.value)}
+                  onChange={(event) => handleClientDocChange(event.target.value)}
                   placeholder="Ej. 001-1234567-8"
                   className="w-full rounded-xl border border-slate-700 bg-slate-950/70 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
                 />
