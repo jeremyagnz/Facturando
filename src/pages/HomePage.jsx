@@ -1,4 +1,11 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
+import {
+  calculateItbis,
+  calculateProductSubtotal,
+  calculateSubtotal,
+  calculateTotal,
+  normalizeNonNegativeNumber,
+} from '../utils/invoiceCalculations'
 
 const initialProducts = [
   { id: 1, description: 'Servicio de consultoría', quantity: 1, price: 2500 },
@@ -24,13 +31,15 @@ function createEmptyProduct(id) {
 
 function normalizeProductField(field, value) {
   if (field === 'quantity' || field === 'price') {
-    if (value === '') {
-      return 0
-    }
+    return normalizeNonNegativeNumber(value)
+  }
 
-    const numericValue = Number(value)
+  return value
+}
 
-    return Number.isNaN(numericValue) ? 0 : numericValue
+function normalizeQuantityBlurValue(value) {
+  if (value === 0) {
+    return 1
   }
 
   return value
@@ -44,9 +53,16 @@ function HomePage() {
   const [products, setProducts] = useState(initialProducts)
   const [nextProductId, setNextProductId] = useState(calculateNextProductId(initialProducts))
 
-  const subtotal = products.reduce((accumulator, product) => {
-    return accumulator + product.quantity * product.price
-  }, 0)
+  const { subtotal, itbis, total } = useMemo(() => {
+    const nextSubtotal = calculateSubtotal(products)
+    const nextItbis = calculateItbis(nextSubtotal)
+
+    return {
+      subtotal: nextSubtotal,
+      itbis: nextItbis,
+      total: calculateTotal(nextSubtotal, nextItbis),
+    }
+  }, [products])
 
   const handleProductChange = (productId, field, value) => {
     const normalizedValue = normalizeProductField(field, value)
@@ -63,6 +79,31 @@ function HomePage() {
         }
       }),
     )
+  }
+
+  const handleProductBlur = (productId, field) => {
+    setProducts((currentProducts) => {
+      const productIndex = currentProducts.findIndex((product) => product.id === productId)
+
+      if (productIndex === -1 || field !== 'quantity') {
+        return currentProducts
+      }
+
+      const product = currentProducts[productIndex]
+      const normalizedValue = normalizeQuantityBlurValue(product.quantity)
+
+      if (normalizedValue === product.quantity) {
+        return currentProducts
+      }
+
+      const nextProducts = [...currentProducts]
+      nextProducts[productIndex] = {
+        ...product,
+        quantity: normalizedValue,
+      }
+
+      return nextProducts
+    })
   }
 
   const handleAddProduct = () => {
@@ -163,6 +204,7 @@ function HomePage() {
                               step="1"
                               value={product.quantity}
                               onChange={(event) => handleProductChange(product.id, 'quantity', event.target.value)}
+                              onBlur={() => handleProductBlur(product.id, 'quantity')}
                               className="w-24 rounded-xl border border-slate-700 bg-slate-950/70 px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
                             />
                           </td>
@@ -177,7 +219,7 @@ function HomePage() {
                             />
                           </td>
                           <td className="px-4 py-4">
-                            {currencyFormatter.format(product.quantity * product.price)}
+                            {currencyFormatter.format(calculateProductSubtotal(product))}
                           </td>
                           <td className="px-4 py-4">
                             <button
@@ -215,11 +257,11 @@ function HomePage() {
                 </div>
                 <div className="flex items-center justify-between text-slate-300">
                   <dt>ITBIS</dt>
-                  <dd>Pendiente</dd>
+                  <dd>{currencyFormatter.format(itbis)}</dd>
                 </div>
                 <div className="flex items-center justify-between border-t border-slate-800 pt-3 text-base font-semibold text-white">
                   <dt>Total</dt>
-                  <dd>Pendiente</dd>
+                  <dd>{currencyFormatter.format(total)}</dd>
                 </div>
               </dl>
             </div>
