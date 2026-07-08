@@ -1,22 +1,34 @@
 # Facturando
 
-Aplicación de facturación electrónica.
+Single Page Application base construida con React, Vite y Tailwind CSS.
 
-## Descripción
+## Stack
 
-Facturando es un sistema para la gestión y emisión de facturas electrónicas.
+- React 19
+- Vite 8
+- Tailwind CSS 4
+- ESLint con configuración flat
 
-## Primeros pasos
+## Estructura
 
-1. Clona el repositorio.
-2. Instala las dependencias del proyecto.
-3. Configura las variables de entorno necesarias.
-4. Ejecuta la aplicación.
+```text
+src/
+  components/
+  pages/
+  hooks/
+  utils/
+  styles/
+```
 
-## Contribución
+## Scripts
 
-Las contribuciones son bienvenidas. Por favor abre un _issue_ o un _pull request_ con tus cambios.
+- `npm install`: instala las dependencias
+- `npm run dev`: inicia el servidor de desarrollo
+- `npm run build`: genera la versión de producción
+- `npm run preview`: previsualiza el build localmente
+- `npm run lint`: ejecuta ESLint
 
-## Licencia
+## Notas
 
-MIT
+- Tailwind CSS está integrado mediante el plugin oficial de Vite.
+- La estructura inicial no incluye lógica de negocio para que puedas comenzar el desarrollo desde una base limpia.
