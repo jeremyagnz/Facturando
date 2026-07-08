@@ -18,7 +18,7 @@ function HomePage() {
                   id="client-name"
                   type="text"
                   placeholder="Ej. Juan Pérez"
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950/70 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none"
+                  className="w-full rounded-xl border border-slate-700 bg-slate-950/70 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
                 />
               </div>
 
@@ -30,7 +30,7 @@ function HomePage() {
                   id="client-doc"
                   type="text"
                   placeholder="Ej. 001-1234567-8"
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950/70 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none"
+                  className="w-full rounded-xl border border-slate-700 bg-slate-950/70 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
                 />
               </div>
 
@@ -42,7 +42,7 @@ function HomePage() {
                   id="client-ncf"
                   type="text"
                   placeholder="Ej. B0100000001"
-                  className="w-full rounded-xl border border-slate-700 bg-slate-950/70 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none"
+                  className="w-full rounded-xl border border-slate-700 bg-slate-950/70 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
                 />
               </div>
             </div>
@@ -52,6 +52,7 @@ function HomePage() {
             <div className="overflow-hidden rounded-2xl border border-slate-800">
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-slate-800 text-left">
+                  <caption className="sr-only">Lista de productos de la factura</caption>
                   <thead className="bg-slate-950/60">
                     <tr>
                       <th className="px-4 py-3 text-sm font-semibold text-slate-200">Descripción</th>
@@ -80,7 +81,7 @@ function HomePage() {
 
             <button
               type="button"
-              className="mt-4 inline-flex items-center rounded-xl border border-emerald-400/30 bg-emerald-400/10 px-4 py-2 text-sm font-medium text-emerald-300 transition hover:bg-emerald-400/20"
+              className="mt-4 inline-flex items-center rounded-xl border border-emerald-400/30 bg-emerald-400/10 px-4 py-2 text-sm font-medium text-emerald-300 transition hover:bg-emerald-400/20 focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
             >
               Agregar Producto
             </button>
