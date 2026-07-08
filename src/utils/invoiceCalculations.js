@@ -1,7 +1,7 @@
 export const ITBIS_RATE = 0.18
 
 export function roundToTwoDecimals(value) {
-  return Math.round(value * 100) / 100
+  return Number(value.toFixed(2))
 }
 
 export function normalizeNonNegativeNumber(value) {

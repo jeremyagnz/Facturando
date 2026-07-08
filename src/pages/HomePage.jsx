@@ -88,9 +88,15 @@ function HomePage() {
           return product
         }
 
+        const normalizedValue = normalizeProductBlurValue(field, product[field])
+
+        if (normalizedValue === product[field]) {
+          return product
+        }
+
         return {
           ...product,
-          [field]: normalizeProductBlurValue(field, product[field]),
+          [field]: normalizedValue,
         }
       }),
     )
