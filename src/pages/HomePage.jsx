@@ -1,13 +1,11 @@
-const sampleProducts = [
-  { id: 'product-1', description: 'Servicio de consultoría', quantity: 1, unitPrice: 2500 },
-  { id: 'product-2', description: 'Diseño de propuesta', quantity: 2, unitPrice: 1200 },
+import { useState } from 'react'
+
+const initialProducts = [
+  { id: 1, description: 'Servicio de consultoría', quantity: 1, price: 2500 },
+  { id: 2, description: 'Diseño de propuesta', quantity: 2, price: 1200 },
 ]
 
-const sampleSummary = {
-  subtotal: 4900,
-  itbis: 882,
-  total: 5782,
-}
+const TABLE_COLUMN_COUNT = 5
 
 const currencyFormatter = new Intl.NumberFormat('es-DO', {
   style: 'currency',
@@ -15,7 +13,67 @@ const currencyFormatter = new Intl.NumberFormat('es-DO', {
   minimumFractionDigits: 2,
 })
 
+function createEmptyProduct(id) {
+  return {
+    id,
+    description: '',
+    quantity: 1,
+    price: 0,
+  }
+}
+
+function normalizeProductField(field, value) {
+  if (field === 'quantity' || field === 'price') {
+    if (value === '') {
+      return 0
+    }
+
+    const numericValue = Number(value)
+
+    return Number.isNaN(numericValue) ? 0 : numericValue
+  }
+
+  return value
+}
+
+function calculateNextProductId(products) {
+  return products.length > 0 ? Math.max(...products.map((product) => product.id)) + 1 : 1
+}
+
 function HomePage() {
+  const [products, setProducts] = useState(initialProducts)
+  const [nextProductId, setNextProductId] = useState(calculateNextProductId(initialProducts))
+
+  const subtotal = products.reduce((accumulator, product) => {
+    return accumulator + product.quantity * product.price
+  }, 0)
+
+  const handleProductChange = (productId, field, value) => {
+    const normalizedValue = normalizeProductField(field, value)
+
+    setProducts((currentProducts) =>
+      currentProducts.map((product) => {
+        if (product.id !== productId) {
+          return product
+        }
+
+        return {
+          ...product,
+          [field]: normalizedValue,
+        }
+      }),
+    )
+  }
+
+  const handleAddProduct = () => {
+    setProducts((currentProducts) => [...currentProducts, createEmptyProduct(nextProductId)])
+    setNextProductId((currentId) => currentId + 1)
+  }
+
+  const handleRemoveProduct = (productId) => {
+    setProducts((currentProducts) => currentProducts.filter((product) => product.id !== productId))
+  }
+
   return (
     <section className="flex flex-1 justify-center py-6 sm:py-10">
       <div className="w-full max-w-6xl">
@@ -74,19 +132,65 @@ function HomePage() {
                     <tr>
                       <th className="px-4 py-3 text-sm font-semibold text-slate-200">Descripción</th>
                       <th className="px-4 py-3 text-sm font-semibold text-slate-200">Cantidad</th>
-                      <th className="px-4 py-3 text-sm font-semibold text-slate-200">Precio Unitario</th>
+                      <th className="px-4 py-3 text-sm font-semibold text-slate-200">Precio</th>
                       <th className="px-4 py-3 text-sm font-semibold text-slate-200">Subtotal</th>
+                      <th className="px-4 py-3 text-sm font-semibold text-slate-200">Acciones</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-800 bg-slate-900/40 text-sm text-slate-300">
-                    {sampleProducts.map((product) => (
-                      <tr key={product.id}>
-                        <td className="px-4 py-4">{product.description}</td>
-                        <td className="px-4 py-4">{product.quantity}</td>
-                        <td className="px-4 py-4">{currencyFormatter.format(product.unitPrice)}</td>
-                        <td className="px-4 py-4">{currencyFormatter.format(product.quantity * product.unitPrice)}</td>
+                    {products.length === 0 ? (
+                      <tr>
+                        <td colSpan={TABLE_COLUMN_COUNT} className="px-4 py-6 text-center text-slate-400">
+                          No hay productos. Agrega una nueva fila para comenzar.
+                        </td>
                       </tr>
-                    ))}
+                    ) : (
+                      products.map((product) => (
+                        <tr key={product.id}>
+                          <td className="px-4 py-4">
+                            <input
+                              type="text"
+                              value={product.description}
+                              onChange={(event) => handleProductChange(product.id, 'description', event.target.value)}
+                              placeholder="Describe el producto o servicio"
+                              className="w-full rounded-xl border border-slate-700 bg-slate-950/70 px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
+                            />
+                          </td>
+                          <td className="px-4 py-4">
+                            <input
+                              type="number"
+                              min="1"
+                              step="1"
+                              value={product.quantity}
+                              onChange={(event) => handleProductChange(product.id, 'quantity', event.target.value)}
+                              className="w-24 rounded-xl border border-slate-700 bg-slate-950/70 px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
+                            />
+                          </td>
+                          <td className="px-4 py-4">
+                            <input
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              value={product.price}
+                              onChange={(event) => handleProductChange(product.id, 'price', event.target.value)}
+                              className="w-32 rounded-xl border border-slate-700 bg-slate-950/70 px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
+                            />
+                          </td>
+                          <td className="px-4 py-4">
+                            {currencyFormatter.format(product.quantity * product.price)}
+                          </td>
+                          <td className="px-4 py-4">
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveProduct(product.id)}
+                              className="inline-flex items-center rounded-xl border border-rose-400/30 bg-rose-400/10 px-4 py-2 text-sm font-medium text-rose-300 transition hover:bg-rose-400/20 focus:outline-none focus:ring-2 focus:ring-rose-400/50"
+                            >
+                              Eliminar
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -94,6 +198,7 @@ function HomePage() {
 
             <button
               type="button"
+              onClick={handleAddProduct}
               className="mt-4 inline-flex items-center rounded-xl border border-emerald-400/30 bg-emerald-400/10 px-4 py-2 text-sm font-medium text-emerald-300 transition hover:bg-emerald-400/20 focus:outline-none focus:ring-2 focus:ring-emerald-400/50"
             >
               Agregar Producto
@@ -106,15 +211,15 @@ function HomePage() {
               <dl className="mt-4 space-y-3 text-sm">
                 <div className="flex items-center justify-between text-slate-300">
                   <dt>Subtotal</dt>
-                  <dd>{currencyFormatter.format(sampleSummary.subtotal)}</dd>
+                  <dd>{currencyFormatter.format(subtotal)}</dd>
                 </div>
                 <div className="flex items-center justify-between text-slate-300">
                   <dt>ITBIS</dt>
-                  <dd>{currencyFormatter.format(sampleSummary.itbis)}</dd>
+                  <dd>Pendiente</dd>
                 </div>
                 <div className="flex items-center justify-between border-t border-slate-800 pt-3 text-base font-semibold text-white">
                   <dt>Total</dt>
-                  <dd>{currencyFormatter.format(sampleSummary.total)}</dd>
+                  <dd>Pendiente</dd>
                 </div>
               </dl>
             </div>
