@@ -95,12 +95,12 @@ function validateForm({ clientName, clientDoc, clientNcf, products }) {
 
     const normalizedQuantity = Number(product.quantity)
     if (!isValidPositiveInteger(normalizedQuantity)) {
-      productErrors.quantity = 'La cantidad debe ser un entero mayor que 0.'
+      productErrors.quantity = 'La cantidad debe ser un número entero mayor que 0.'
     }
 
     const normalizedPrice = Number(product.price)
     if (!Number.isFinite(normalizedPrice) || normalizedPrice <= 0) {
-      productErrors.price = 'El precio debe ser mayor que 0.'
+      productErrors.price = 'El precio debe ser un número mayor que 0.'
     }
 
     if (Object.keys(productErrors).length > 0) {
