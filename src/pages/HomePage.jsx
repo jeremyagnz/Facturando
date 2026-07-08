@@ -82,8 +82,10 @@ function HomePage() {
   }
 
   const handleProductBlur = (productId, field) => {
-    setProducts((currentProducts) =>
-      currentProducts.map((product) => {
+    setProducts((currentProducts) => {
+      let didChange = false
+
+      const nextProducts = currentProducts.map((product) => {
         if (product.id !== productId) {
           return product
         }
@@ -94,12 +96,16 @@ function HomePage() {
           return product
         }
 
+        didChange = true
+
         return {
           ...product,
           [field]: normalizedValue,
         }
-      }),
-    )
+      })
+
+      return didChange ? nextProducts : currentProducts
+    })
   }
 
   const handleAddProduct = () => {
