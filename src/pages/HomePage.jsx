@@ -1,13 +1,19 @@
 const sampleProducts = [
-  { id: 'product-1', description: 'Servicio de consultoría', quantity: '1', unitPrice: 'RD$ 2,500.00', subtotal: 'RD$ 2,500.00' },
-  { id: 'product-2', description: 'Diseño de propuesta', quantity: '2', unitPrice: 'RD$ 1,200.00', subtotal: 'RD$ 2,400.00' },
+  { id: 'product-1', description: 'Servicio de consultoría', quantity: 1, unitPrice: 2500 },
+  { id: 'product-2', description: 'Diseño de propuesta', quantity: 2, unitPrice: 1200 },
 ]
 
 const sampleSummary = {
-  subtotal: 'RD$ 4,900.00',
-  itbis: 'RD$ 882.00',
-  total: 'RD$ 5,782.00',
+  subtotal: 4900,
+  itbis: 882,
+  total: 5782,
 }
+
+const currencyFormatter = new Intl.NumberFormat('es-DO', {
+  style: 'currency',
+  currency: 'DOP',
+  minimumFractionDigits: 2,
+})
 
 function HomePage() {
   return (
@@ -77,8 +83,8 @@ function HomePage() {
                       <tr key={product.id}>
                         <td className="px-4 py-4">{product.description}</td>
                         <td className="px-4 py-4">{product.quantity}</td>
-                        <td className="px-4 py-4">{product.unitPrice}</td>
-                        <td className="px-4 py-4">{product.subtotal}</td>
+                        <td className="px-4 py-4">{currencyFormatter.format(product.unitPrice)}</td>
+                        <td className="px-4 py-4">{currencyFormatter.format(product.quantity * product.unitPrice)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -100,15 +106,15 @@ function HomePage() {
               <dl className="mt-4 space-y-3 text-sm">
                 <div className="flex items-center justify-between text-slate-300">
                   <dt>Subtotal</dt>
-                  <dd>{sampleSummary.subtotal}</dd>
+                  <dd>{currencyFormatter.format(sampleSummary.subtotal)}</dd>
                 </div>
                 <div className="flex items-center justify-between text-slate-300">
                   <dt>ITBIS</dt>
-                  <dd>{sampleSummary.itbis}</dd>
+                  <dd>{currencyFormatter.format(sampleSummary.itbis)}</dd>
                 </div>
                 <div className="flex items-center justify-between border-t border-slate-800 pt-3 text-base font-semibold text-white">
                   <dt>Total</dt>
-                  <dd>{sampleSummary.total}</dd>
+                  <dd>{currencyFormatter.format(sampleSummary.total)}</dd>
                 </div>
               </dl>
             </div>
