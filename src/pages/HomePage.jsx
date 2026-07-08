@@ -1,6 +1,6 @@
 const sampleProducts = [
-  { description: 'Servicio de consultoría', quantity: '1', unitPrice: 'RD$ 2,500.00', subtotal: 'RD$ 2,500.00' },
-  { description: 'Diseño de propuesta', quantity: '2', unitPrice: 'RD$ 1,200.00', subtotal: 'RD$ 2,400.00' },
+  { id: 'product-1', description: 'Servicio de consultoría', quantity: '1', unitPrice: 'RD$ 2,500.00', subtotal: 'RD$ 2,500.00' },
+  { id: 'product-2', description: 'Diseño de propuesta', quantity: '2', unitPrice: 'RD$ 1,200.00', subtotal: 'RD$ 2,400.00' },
 ]
 
 const sampleSummary = {
@@ -62,7 +62,7 @@ function HomePage() {
           <section className="mt-8">
             <div className="overflow-hidden rounded-2xl border border-slate-800">
               <div className="overflow-x-auto">
-                <table aria-label="Lista de productos de la factura" className="min-w-full divide-y divide-slate-800 text-left">
+                <table className="min-w-full divide-y divide-slate-800 text-left">
                   <caption className="sr-only">Lista de productos de la factura</caption>
                   <thead className="bg-slate-950/60">
                     <tr>
@@ -74,7 +74,7 @@ function HomePage() {
                   </thead>
                   <tbody className="divide-y divide-slate-800 bg-slate-900/40 text-sm text-slate-300">
                     {sampleProducts.map((product) => (
-                      <tr key={`${product.description}-${product.quantity}`}>
+                      <tr key={product.id}>
                         <td className="px-4 py-4">{product.description}</td>
                         <td className="px-4 py-4">{product.quantity}</td>
                         <td className="px-4 py-4">{product.unitPrice}</td>
