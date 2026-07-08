@@ -30,14 +30,16 @@ function normalizeProductField(field, value) {
   return value
 }
 
+function getInitialNextProductId(products) {
+  return products.length > 0 ? Math.max(...products.map((product) => product.id)) + 1 : 1
+}
+
 function HomePage() {
   const [products, setProducts] = useState(initialProducts)
-  const [nextProductId, setNextProductId] = useState(
-    Math.max(0, ...initialProducts.map((product) => product.id)) + 1,
-  )
+  const [nextProductId, setNextProductId] = useState(getInitialNextProductId(initialProducts))
 
   const subtotal = products.reduce((accumulator, product) => {
-    return accumulator + Number(product.quantity || 0) * Number(product.price || 0)
+    return accumulator + product.quantity * product.price
   }, 0)
 
   const handleProductChange = (productId, field, value) => {
@@ -169,7 +171,7 @@ function HomePage() {
                             />
                           </td>
                           <td className="px-4 py-4">
-                            {currencyFormatter.format(Number(product.quantity || 0) * Number(product.price || 0))}
+                            {currencyFormatter.format(product.quantity * product.price)}
                           </td>
                           <td className="px-4 py-4">
                             <button
