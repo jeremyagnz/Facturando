@@ -1,4 +1,11 @@
 import { useState } from 'react'
+import {
+  calculateItbis,
+  calculateProductSubtotal,
+  calculateSubtotal,
+  calculateTotal,
+  normalizeNonNegativeNumber,
+} from '../utils/invoiceCalculations'
 
 const initialProducts = [
   { id: 1, description: 'Servicio de consultoría', quantity: 1, price: 2500 },
@@ -24,13 +31,7 @@ function createEmptyProduct(id) {
 
 function normalizeProductField(field, value) {
   if (field === 'quantity' || field === 'price') {
-    if (value === '') {
-      return 0
-    }
-
-    const numericValue = Number(value)
-
-    return Number.isNaN(numericValue) ? 0 : numericValue
+    return normalizeNonNegativeNumber(value)
   }
 
   return value
@@ -44,9 +45,9 @@ function HomePage() {
   const [products, setProducts] = useState(initialProducts)
   const [nextProductId, setNextProductId] = useState(calculateNextProductId(initialProducts))
 
-  const subtotal = products.reduce((accumulator, product) => {
-    return accumulator + product.quantity * product.price
-  }, 0)
+  const subtotal = calculateSubtotal(products)
+  const itbis = calculateItbis(subtotal)
+  const total = calculateTotal(subtotal, itbis)
 
   const handleProductChange = (productId, field, value) => {
     const normalizedValue = normalizeProductField(field, value)
@@ -159,7 +160,7 @@ function HomePage() {
                           <td className="px-4 py-4">
                             <input
                               type="number"
-                              min="1"
+                              min="0"
                               step="1"
                               value={product.quantity}
                               onChange={(event) => handleProductChange(product.id, 'quantity', event.target.value)}
@@ -177,7 +178,7 @@ function HomePage() {
                             />
                           </td>
                           <td className="px-4 py-4">
-                            {currencyFormatter.format(product.quantity * product.price)}
+                            {currencyFormatter.format(calculateProductSubtotal(product))}
                           </td>
                           <td className="px-4 py-4">
                             <button
@@ -215,11 +216,11 @@ function HomePage() {
                 </div>
                 <div className="flex items-center justify-between text-slate-300">
                   <dt>ITBIS</dt>
-                  <dd>Pendiente</dd>
+                  <dd>{currencyFormatter.format(itbis)}</dd>
                 </div>
                 <div className="flex items-center justify-between border-t border-slate-800 pt-3 text-base font-semibold text-white">
                   <dt>Total</dt>
-                  <dd>Pendiente</dd>
+                  <dd>{currencyFormatter.format(total)}</dd>
                 </div>
               </dl>
             </div>
